@@ -8,7 +8,7 @@ import from endpoints { AddTask }
 walker:priv SetupMockData {
     can setup with Root entry {
         # Task 1
-        spawn here ++> AddTask(
+        here spawn AddTask(
             title="Finish AI Masterclass Assignment", 
             description="Complete the backend walkers and frontend UI.", 
             due_date="Today 5:00 PM", 
@@ -16,7 +16,7 @@ walker:priv SetupMockData {
         );
         
         # Task 2 (Conflict with Task 1)
-        spawn here ++> AddTask(
+        here spawn AddTask(
             title="Team Meeting", 
             description="Discuss project architecture.", 
             due_date="Today 4:00 PM - 5:30 PM", 
@@ -24,7 +24,7 @@ walker:priv SetupMockData {
         );
         
         # Task 3
-        spawn here ++> AddTask(
+        here spawn AddTask(
             title="Grocery Shopping", 
             description="Buy milk, eggs, and bread.", 
             due_date="Today 6:00 PM", 
@@ -32,7 +32,7 @@ walker:priv SetupMockData {
         );
         
         # Task 4
-        spawn here ++> AddTask(
+        here spawn AddTask(
             title="Read Research Paper", 
             description="Read the latest Jac language documentation.", 
             due_date="Tomorrow 9:00 AM", 

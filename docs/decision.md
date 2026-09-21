@@ -39,3 +39,15 @@
 ## Decision: Testing & Demo Day Strategy
 - **Decision:** Use a realistic "busy week" mock dataset (overlapping tasks, tight deadlines) to thoroughly stress-test the AI Agentic workflows. For the Demo Day, prepare both a Live Demonstration of the AI resolving a conflict, and a Pre-recorded Video as a failsafe backup.
 - **Reasoning:** Robust testing ensures the AI features shine. Having a backup video guarantees a smooth presentation regardless of live technical issues.
+
+## Decision: Walker Permissions (walker:pub vs walker:priv)
+- **Decision:** All Walkers that need to be accessed from the Web Frontend (AddTask, ListTasks, AI Agents) must be declared as `walker:pub`.
+- **Reasoning:** Jac v0.37 enforces strict access control. `walker:priv` walkers return HTTP 401 when called from the client-side UI, causing infinite refresh loops.
+
+## Decision: Jac JSX Limitations
+- **Decision:** Avoid JavaScript-style ternary operators (`? :`), `.length` property access, and complex string concatenation inside Jac JSX templates. Use `len()` instead of `.length`. Always show UI elements instead of conditional rendering.
+- **Reasoning:** Jac's JSX parser is stricter than standard React JSX. These patterns cause compile errors.
+
+## Decision: by llm() Function Declarations
+- **Decision:** Use `def` (not `can`) for function-style declarations that use `by llm()`.
+- **Reasoning:** Jac v0.37 reserves `can` for ability declarations that use `with` (e.g., `can do_something with Root entry`). Function-style declarations with parameters must use `def`.

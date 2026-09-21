@@ -3,7 +3,6 @@
 An interactive terminal menu for quick task entry and viewing.
 """
 
-import:py from builtins { input, print }
 import from endpoints { AddTask, ListTasks }
 
 walker cli_app {
@@ -28,10 +27,10 @@ walker cli_app {
                     continue;
                 }
                 
-                spawn here ++> AddTask(title=title, description=desc, priority=priority);
+                here spawn AddTask(title=title, description=desc, priority=priority);
                 print("\n[SUCCESS] Task added to your planner!");
             } elif choice == "2" {
-                tasks = spawn here ++> ListTasks();
+                tasks = here spawn ListTasks();
                 print("\n--- Your Tasks ---");
                 if not tasks.reports {
                     print("No tasks found. Add some tasks first!");
@@ -51,5 +50,5 @@ walker cli_app {
 }
 
 with entry {
-    spawn root ++> cli_app();
+    root spawn cli_app();
 }

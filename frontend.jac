@@ -1,12 +1,15 @@
 """planner - Client-Side UI."""
 
+import from .components.TaskCard { TaskCard }
 import from endpoints { TaskNode, AddTask, ListTasks }
+import from agents { ReflectionAgent, HabitCoachAgent, ScheduleResolver }
 
 def:pub app -> JsxElement {
     has tasks: list[TaskNode] = [],
         title: str = "",
         desc: str = "",
-        priority: str = "medium";
+        priority: str = "medium",
+        ai_response: str = "";
 
     # Load existing tasks once, when the component first mounts.
     can with entry {
@@ -15,6 +18,8 @@ def:pub app -> JsxElement {
 
     async def loadTasks -> None;
     async def postTask(e: FormEvent) -> None;
+    async def getAiBriefing -> None;
+    async def getHabitAdvice -> None;
 
     <div
         style={{
@@ -26,8 +31,29 @@ def:pub app -> JsxElement {
         }}
     >
         <h1>Personal Planner Dashboard</h1>
-        <p style={{"color": "#666"}}>Manage your daily tasks and schedule.</p>
-        
+        <div style={{"display": "flex", "justifyContent": "space-between", "alignItems": "center"}}>
+            <p style={{"color": "#666"}}>Manage your daily tasks and schedule.</p>
+            <div style={{"display": "flex", "gap": "0.5rem"}}>
+                <button
+                    onClick={getAiBriefing}
+                    style={{"padding": "0.5rem 1rem", "backgroundColor": "#8A2BE2", "color": "white", "border": "none", "borderRadius": "4px", "cursor": "pointer"}}
+                >
+                    AI Morning Briefing
+                </button>
+                <button
+                    onClick={getHabitAdvice}
+                    style={{"padding": "0.5rem 1rem", "backgroundColor": "#FF8C00", "color": "white", "border": "none", "borderRadius": "4px", "cursor": "pointer"}}
+                >
+                    Habit Coach
+                </button>
+            </div>
+        </div>
+
+        <div style={{"margin": "1rem 0", "padding": "1rem", "backgroundColor": "#F3E5F5", "borderLeft": "4px solid #8A2BE2", "borderRadius": "4px"}}>
+            <h4 style={{"margin": "0 0 0.5rem 0", "color": "#4A148C"}}>AI Assistant Says:</h4>
+            <p style={{"margin": "0", "whiteSpace": "pre-wrap"}}>{ai_response}</p>
+        </div>
+
         <form
             onSubmit={postTask}
             style={{"display": "flex", "flexDirection": "column", "gap": "1rem", "marginBottom": "2rem", "padding": "1rem", "backgroundColor": "#f9f9f9", "borderRadius": "8px"}}
@@ -63,23 +89,13 @@ def:pub app -> JsxElement {
                 Add Task
             </button>
         </form>
-        
+
         <h2>Your Tasks</h2>
         <div style={{"display": "flex", "flexDirection": "column", "gap": "1rem"}}>
             {[
-                <div key={idx} style={{"padding": "1rem", "border": "1px solid #ddd", "borderRadius": "8px", "borderLeft": "5px solid " + (t.priority == "high" ? "#ff4d4f" : t.priority == "medium" ? "#faad14" : "#52c41a")}}>
-                    <h3 style={{"margin": "0 0 0.5rem 0"}}>{t.title}</h3>
-                    <p style={{"margin": "0", "color": "#555"}}>{t.description}</p>
-                    <div style={{"marginTop": "0.5rem", "fontSize": "0.85rem", "color": "#888", "display": "flex", "justifyContent": "space-between"}}>
-                        <span>Status: <b>{t.status}</b></span>
-                        <span style={{"textTransform": "uppercase"}}>{t.priority} Priority</span>
-                    </div>
-                </div>
+                <TaskCard key={idx} title={t.title} description={t.description} status={t.status} priority={t.priority}/>
                 for (idx, t) in enumerate(tasks)
             ]}
-            {
-                tasks.length == 0 ? <p style={{"color": "#999", "fontStyle": "italic"}}>No tasks found. Add a task to get started!</p> : null
-            }
         </div>
     </div>
 }

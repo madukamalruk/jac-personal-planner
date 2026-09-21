@@ -16,3 +16,16 @@ impl app.postTask(e: FormEvent) -> None {
     desc = "";
     priority = "medium";
 }
+
+impl app.getAiBriefing -> None {
+    ai_response = "Thinking... 💭";
+    result = root spawn ReflectionAgent(time_of_day="morning");
+    ai_response = result.reports[0];
+}
+
+impl app.getHabitAdvice -> None {
+    ai_response = "Analyzing schedule for habits... 💭";
+    result = root spawn HabitCoachAgent();
+    ai_response = result.reports[0];
+}
+
