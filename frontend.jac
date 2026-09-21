@@ -1,78 +1,85 @@
 """planner - Client-Side UI."""
 
-import from .components.MessageCard { MessageCard }
-
-import from endpoints { Message, PostMessage, ListMessages }
+import from endpoints { TaskNode, AddTask, ListTasks }
 
 def:pub app -> JsxElement {
-    has messages: list[Message] = [],
-        author: str = "",
-        text: str = "";
+    has tasks: list[TaskNode] = [],
+        title: str = "",
+        desc: str = "",
+        priority: str = "medium";
 
-    # Load existing messages once, when the component first mounts.
+    # Load existing tasks once, when the component first mounts.
     can with entry {
-        loadMessages();
+        loadTasks();
     }
 
-    async def loadMessages -> None;
-    async def postMessage(e: FormEvent) -> None;
+    async def loadTasks -> None;
+    async def postTask(e: FormEvent) -> None;
 
     <div
         style={{
-            "maxWidth": "600px",
+            "maxWidth": "800px",
             "margin": "2rem auto",
             "padding": "0 1rem",
             "fontFamily": "system-ui, -apple-system, sans-serif",
             "color": "#1a1a2e"
         }}
     >
-        <h1>planner</h1>
-        <p style={{"color": "#666"}}>A tiny full-stack guestbook in Jac.</p>
+        <h1>Personal Planner Dashboard</h1>
+        <p style={{"color": "#666"}}>Manage your daily tasks and schedule.</p>
+        
         <form
-            onSubmit={postMessage}
-            style={{"display": "flex", "gap": "0.5rem", "marginBottom": "1.5rem"}}
+            onSubmit={postTask}
+            style={{"display": "flex", "flexDirection": "column", "gap": "1rem", "marginBottom": "2rem", "padding": "1rem", "backgroundColor": "#f9f9f9", "borderRadius": "8px"}}
         >
+            <h3>Add New Task</h3>
             <input
                 type="text"
-                value={author}
-                onChange={lambda (e: ChangeEvent) { author = e.target.value; }}
-                placeholder="Name"
-                style={{
-                    "flex": "1",
-                    "padding": "0.6rem",
-                    "border": "1px solid #ddd",
-                    "borderRadius": "6px"
-                }}
+                value={title}
+                onChange={lambda (e: ChangeEvent) { title = e.target.value; }}
+                placeholder="Task Title"
+                style={{"padding": "0.6rem", "border": "1px solid #ddd", "borderRadius": "6px"}}
             />
             <input
                 type="text"
-                value={text}
-                onChange={lambda (e: ChangeEvent) { text = e.target.value; }}
-                placeholder="Say something..."
-                style={{
-                    "flex": "2",
-                    "padding": "0.6rem",
-                    "border": "1px solid #ddd",
-                    "borderRadius": "6px"
-                }}
+                value={desc}
+                onChange={lambda (e: ChangeEvent) { desc = e.target.value; }}
+                placeholder="Description"
+                style={{"padding": "0.6rem", "border": "1px solid #ddd", "borderRadius": "6px"}}
             />
+            <select
+                value={priority}
+                onChange={lambda (e: ChangeEvent) { priority = e.target.value; }}
+                style={{"padding": "0.6rem", "border": "1px solid #ddd", "borderRadius": "6px"}}
+            >
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+            </select>
             <button
                 type="submit"
-                style={{
-                    "padding": "0.6rem 1.2rem",
-                    "backgroundColor": "#4CAF50",
-                    "color": "white",
-                    "border": "none",
-                    "borderRadius": "6px",
-                    "cursor": "pointer"
-                }}
+                style={{"padding": "0.8rem", "backgroundColor": "#4CAF50", "color": "white", "border": "none", "borderRadius": "6px", "cursor": "pointer", "fontWeight": "bold"}}
             >
-                Post
+                Add Task
             </button>
         </form>
-        {[
-            <MessageCard key={idx} author={msg.author} text={msg.text}/>
-            for (idx, msg) in enumerate(messages)
-        ]}
+        
+        <h2>Your Tasks</h2>
+        <div style={{"display": "flex", "flexDirection": "column", "gap": "1rem"}}>
+            {[
+                <div key={idx} style={{"padding": "1rem", "border": "1px solid #ddd", "borderRadius": "8px", "borderLeft": "5px solid " + (t.priority == "high" ? "#ff4d4f" : t.priority == "medium" ? "#faad14" : "#52c41a")}}>
+                    <h3 style={{"margin": "0 0 0.5rem 0"}}>{t.title}</h3>
+                    <p style={{"margin": "0", "color": "#555"}}>{t.description}</p>
+                    <div style={{"marginTop": "0.5rem", "fontSize": "0.85rem", "color": "#888", "display": "flex", "justifyContent": "space-between"}}>
+                        <span>Status: <b>{t.status}</b></span>
+                        <span style={{"textTransform": "uppercase"}}>{t.priority} Priority</span>
+                    </div>
+                </div>
+                for (idx, t) in enumerate(tasks)
+            ]}
+            {
+                tasks.length == 0 ? <p style={{"color": "#999", "fontStyle": "italic"}}>No tasks found. Add a task to get started!</p> : null
+            }
+        </div>
     </div>
 }

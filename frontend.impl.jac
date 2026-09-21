@@ -1,16 +1,18 @@
 """Implementations for the planner frontend component."""
 
-impl app.loadMessages -> None {
-    result = root spawn ListMessages();
-    messages = result.reports;
+impl app.loadTasks -> None {
+    result = root spawn ListTasks();
+    tasks = result.reports;
 }
 
-impl app.postMessage(e: FormEvent) -> None {
+impl app.postTask(e: FormEvent) -> None {
     e.preventDefault();
-    if not author.strip() or not text.strip() {
+    if not title.strip() {
         return;
     }
-    result = root spawn PostMessage(author=author, text=text);
-    messages = messages + [result.reports[0]];
-    text = "";
+    result = root spawn AddTask(title=title, description=desc, priority=priority);
+    tasks = tasks + [result.reports[0]];
+    title = "";
+    desc = "";
+    priority = "medium";
 }
